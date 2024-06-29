@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import *
+import mysql.connector
+import configparser
 
 def header():
   w = 600 # width for the Tk root
@@ -154,11 +156,34 @@ def search_result():
   pass
   
 def submit_passenger():
+  db_conn = connect_db()
+  disconnt_db(db_conn)
   pass
   
 def submit_registration():
+  db_conn = connect_db()
+  disconnt_db(db_conn)
   pass
+
+
+def connect_db():
+  config = configparser.RawConfigParser()
+  config.read('db_config.cfg')
+  conn_dict = dict(config.items('MYSQL'))
+  print("Connecting to db "+ conn_dict['database'])
+
+  cnx = mysql.connector.connect(user=conn_dict['user'], 
+                                password=conn_dict['password'],
+                                host=conn_dict['host'],
+                                database=conn_dict['database'])
+  return cnx
+
+def disconnt_db(cnx):
+  print("Disconnecting from db")
+  cnx.close()
   
+#Main script starts here
+
 root = tk.Tk()
 v_login_username = StringVar()
 v_login_pwd = StringVar()
