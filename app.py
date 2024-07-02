@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox 
+from tkinter import ttk
 import mysql.connector
 import configparser
+import datetime
+from datetime import timedelta
 
 def header():
   w = 600 # width for the Tk root
@@ -24,7 +28,9 @@ def header():
 
 def login_page():
   for widget in F1.winfo_children():
-      widget.destroy() 
+      widget.destroy()
+      v_login_username.set("")
+      v_login_pwd.set("")
   F1.configure(text='Login')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
 
@@ -32,7 +38,7 @@ def login_page():
   username_txt = Entry(F1, width=30, textvariable=v_login_username)
   pwd_lbl = Label(F1, text="Password:")
   pwd_txt = Entry(F1, width=30, show="*", textvariable=v_login_pwd)
-  login_btn = Button(F1, text="Login",  width=10,command=menu_page)
+  login_btn = Button(F1, text="Login",  width=10,command=submit_login)
   register_btn = Button(F1, text="Register",  width=10, command=registration_page)
 
   username_lbl.grid(row=0, column=0, padx=20, pady=5)
@@ -57,7 +63,7 @@ def registration_page():
   phone_txt = Entry(F1, width=30, textvariable=v_reg_phone)
   add_lbl = Label(F1, text="Address:")
   add_txt = Entry(F1, width=30, textvariable=v_reg_add)
-  email_lbl = Label(F1, text="Eamil:")
+  email_lbl = Label(F1, text="Email:")
   email_txt = Entry(F1, width=30, textvariable=v_reg_email)
   register_btn = Button(F1, text="Register",  width=10, command=submit_registration)
   cancel_btn = Button(F1, text="Cancel",  width=10, command=login_page)
@@ -82,7 +88,7 @@ def menu_page():
   F1.configure(text='Menu')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
-  booking_btn = Button(F1, text="Book Ticket",  width=50, command=search_flights,font=('verdana', 10))
+  booking_btn = Button(F1, text="Book Ticket",  width=50, command=flights,font=('verdana', 10))
   history_btn = Button(F1, text="View Bookings",  width=50, command=submit_registration,font=('verdana', 10))
   passenger_btn = Button(F1, text="Add Passengers",  width=50, command=add_passenger,font=('verdana', 10))
   exit_btn = Button(F1, text="Exit",  width=50, command=login_page,font=('verdana', 10))
@@ -125,22 +131,31 @@ def add_passenger():
   add_btn.grid(row=5, column=0, pady=5, padx=10)
   cancel_btn.grid(row=5, column=1, pady=5, padx=10)
 
-def search_flights():
+def flights():
   for widget in F1.winfo_children():
     widget.destroy()  
   F1.configure(text='Search Flights')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
-  
-  scrollbar = Scrollbar(root)
-  scrollbar.pack(side=RIGHT, fill=Y)
+  db_conn = connect_db()
+  cursor = db_conn.cursor()
+  query = ("select distinct start from route order by start")  
+  cursor.execute(query)
+  from_values = cursor.fetchall()
+  query = ("select distinct destination from route order by destination")  
+  cursor.execute(query)
+  to_values = cursor.fetchall()
+
+  sday = datetime.datetime.today() + timedelta(days=1)
+  eday=datetime.datetime.today() + timedelta(days=10)
+  date_values = [(sday+timedelta(days=x)).strftime('%d/%m/%Y') for x in range((eday-sday).days)]
 
   from_lbl = Label(F1, text="From:")
-  from_txt = Listbox(F1, height=1, width=10,yscrollcommand=scrollbar.set)
+  from_txt = ttk.Combobox(F1,state="readonly",width=10,values=from_values, textvariable=v_from)
   to_lbl = Label(F1, text="To:")
-  to_txt = Listbox(F1, height=1, width=10,yscrollcommand=scrollbar.set)
+  to_txt = ttk.Combobox(F1,state="readonly",width=10,values=to_values, textvariable=v_to)
   date_lbl = Label(F1, text="Date:")
-  date_txt = Entry(F1, width=10 , textvariable=v_date)
-  search_btn = Button(F1, text="Search",  width=10, command=search_result)
+  date_txt = ttk.Combobox(F1,state="readonly",width=10,values=date_values,textvariable=v_date)
+  search_btn = Button(F1, text="Search",  width=10, command=submit_flights)
   cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
     
   from_lbl.grid(row=0, column=0, padx=20, pady=5)
@@ -150,22 +165,103 @@ def search_flights():
   date_lbl.grid(row=0, column=4, padx=20, pady=5)
   date_txt.grid(row=0, column=5, pady=5, padx=10)
   search_btn.grid(row=1, column=0, columnspan=3, padx=20, pady=5)
-  cancel_btn.grid(row=1, column=3, columnspan=3, pady=5, padx=10)  
-
-def search_result():
-  pass
+  cancel_btn.grid(row=1, column=3, columnspan=3, pady=5, padx=10) 
   
-def submit_passenger():
+
+def submit_login():
+  l_login_user = v_login_username.get().strip()
+  db_conn = connect_db()
+  result=[]
+  cursor = db_conn.cursor()
+  query = ("select * from customer where username = %s")  
+  cursor.execute(query,(l_login_user,))
+  result = cursor.fetchall()
+  disconnt_db(db_conn)
+  if len(result) == 0:
+    messagebox.showinfo("Error", "Invalid Username/Password.  If you are a first time user, please register in the app.")
+  else:
+    menu_page()          
+
+def submit_flights():
+  l_from = v_from.get()
+  l_to = v_to.get()
+  l_date = v_date.get()
+  print(l_from)
+  print(l_to)
+  print(l_date)
+  if (l_from == "" or l_to == "" or l_date == ""):
+    messagebox.showinfo("Error", "Plese select all required details")
+  else:
+    db_conn = connect_db()
+    result=[]
+    cursor = db_conn.cursor()
+    query = ("select route_id,airline,start,destination,'" +l_date+"' as dep_date, dep_time from route where start=%s and destination=%s")
+    print(query)
+    cursor.execute(query,(l_from,l_to))  
+    result = cursor.fetchall()
+    print(result)
+    search_results(result)
+
+def search_results(result):
+  for widget in F1.winfo_children():
+    widget.destroy()  
+  F1.configure(text='flight results')
+  F1.place(relx=.5, rely=.5, anchor=CENTER)
+  header = ['ID','AIRLINE','FROM','TO','DATE','TIME']
+  r=0
+  c=0
+  for h in header:
+    lbl = Label(F1, text=h)
+    lbl.grid(row=r, column=c, padx=20, pady=5)
+    c=c+1
+  r=r+1
+  
+  for res in result: 
+    c=0
+    for col in res:
+      print(col)
+      if c==0:
+        v_route.set(col)
+        rb = Radiobutton(F1, text = col, variable = v_route, value=col)
+        rb.grid(row=r, column=c, padx=20, pady=5)
+      else:
+        lbl = Label(F1, text=col)
+        lbl.grid(row=r, column=c, padx=20, pady=5)
+      c=c+1
+    r=r+1
+  search_btn = Button(F1, text="Continue",  width=10, command=add_passenger)
+  cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
+  search_btn.grid(row=r, column=0, columnspan=3, padx=20, pady=5)
+  cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
+  
+def add_passenger():
   db_conn = connect_db()
   disconnt_db(db_conn)
   pass
   
 def submit_registration():
+  l_reg_user = v_reg_username.get().strip()
+  l_reg_pwd = v_reg_pwd.get().strip()
+  l_reg_phone = v_reg_phone.get().strip()
+  l_reg_address = v_reg_add.get().strip()
+  l_reg_email = v_reg_email.get().strip()
   db_conn = connect_db()
+  cursor = db_conn.cursor()
+  query = ("select * from customer where username = %s")  
+  cursor.execute(query,(l_reg_user,))
+  result = cursor.fetchall()
+  
+  if len(result) > 0:
+    messagebox.showinfo("Error", "Username Already Exists.  Please choose different username.")
+  else: 
+    cursor = db_conn.cursor()
+    query = ("insert into customer (username,password,phone,address,email) values (%s,%s,%s,%s,%s)")  
+    cursor.execute(query,(l_reg_user,l_reg_pwd,l_reg_phone,l_reg_address,l_reg_email,))
+    db_conn.commit()
+    messagebox.showinfo("Info", "User successfully registered to the system")
   disconnt_db(db_conn)
-  pass
-
-
+  login_page()
+  
 def connect_db():
   config = configparser.RawConfigParser()
   config.read('db_config.cfg')
@@ -179,8 +275,9 @@ def connect_db():
   return cnx
 
 def disconnt_db(cnx):
-  print("Disconnecting from db")
-  cnx.close()
+  if cnx and cnx.is_connected():
+    print("Disconnecting from db")
+    cnx.close()
   
 #Main script starts here
 
@@ -200,6 +297,7 @@ v_pax_email = StringVar()
 v_from = StringVar()
 v_to = StringVar()
 v_date = StringVar()
+v_route = StringVar()
 
 F1 = LabelFrame(root, font=('verdana', 12))
 
