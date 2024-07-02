@@ -104,32 +104,67 @@ def add_passenger():
   F1.configure(text='Add Passenger')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
-  fn_lbl = Label(F1, text="First Name:", width=30)
-  fn_txt = Entry(F1, width=30, textvariable=v_pax_fn)
+  head_lbl1 = Label(F1, text=" ", width=15)
+  head_lbl2 = Label(F1, text="Passenger 1", width=15)
+  head_lbl3 = Label(F1, text="Passenger 2", width=15)
+
+  fn_lbl = Label(F1, text="First Name:", width=15)
+  fn_txt1 = Entry(F1, width=30, textvariable=v_pax_fn1)
+  fn_txt2 = Entry(F1, width=30, textvariable=v_pax_fn2)
+
   ln_lbl = Label(F1, text="Last Name:")
-  ln_txt = Entry(F1, width=30, show="*", textvariable=v_pax_ln)
+  ln_txt1 = Entry(F1, width=30, show="*", textvariable=v_pax_ln1)
+  ln_txt2 = Entry(F1, width=30, show="*", textvariable=v_pax_ln2)
+
   phone_lbl = Label(F1, text="Phone:")
-  phone_txt = Entry(F1, width=30, textvariable=v_pax_phone)
+  phone_txt1 = Entry(F1, width=30, textvariable=v_pax_phone1)
+  phone_txt2 = Entry(F1, width=30, textvariable=v_pax_phone2)
+
   add_lbl = Label(F1, text="Address:")
-  add_txt = Entry(F1, width=30, textvariable=v_pax_add)
-  email_lbl = Label(F1, text="Eamil:")
-  email_txt = Entry(F1, width=30, textvariable=v_pax_email)
-  add_btn = Button(F1, text="Add",  width=10, command=submit_passenger)
-  cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
+  add_txt1 = Entry(F1, width=30, textvariable=v_pax_add1)
+  add_txt2 = Entry(F1, width=30, textvariable=v_pax_add2)
 
-  fn_lbl.grid(row=0, column=0, padx=20, pady=5)
-  fn_txt.grid(row=0, column=1, pady=5, padx=10)
-  ln_lbl.grid(row=1, column=0, padx=20, pady=5)
-  ln_txt.grid(row=1, column=1, pady=5, padx=10)
-  phone_lbl.grid(row=2, column=0, padx=20, pady=5)
-  phone_txt.grid(row=2, column=1, pady=5, padx=10)
-  add_lbl.grid(row=3, column=0, padx=20, pady=5)
-  add_txt.grid(row=3, column=1, pady=5, padx=10)
-  email_lbl.grid(row=4, column=0, padx=20, pady=5)
-  email_txt.grid(row=4, column=1, pady=5, padx=10)
+  email_lbl = Label(F1, text="Email:")
+  email_txt1 = Entry(F1, width=30, textvariable=v_pax_email1)
+  email_txt2 = Entry(F1, width=30, textvariable=v_pax_email2)
+  
+  seat_type_lbl = Label(F1, text="Class:")
+  seat_type1 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type1)
+  seat_type2 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type2)
 
-  add_btn.grid(row=5, column=0, pady=5, padx=10)
-  cancel_btn.grid(row=5, column=1, pady=5, padx=10)
+  book_btn = Button(F1, text="Book Ticket",  width=10, command=submit_passenger)
+  cancel_btn = Button(F1, text="Back",  width=10, command=flights)
+
+  head_lbl1.grid(row=0, column=0, padx=20, pady=5)
+  head_lbl2.grid(row=0, column=1, padx=20, pady=5)
+  head_lbl3.grid(row=0, column=2, padx=20, pady=5)
+
+  fn_lbl.grid(row=1, column=0, padx=20, pady=5)
+  fn_txt1.grid(row=1, column=1, pady=5, padx=10)
+  fn_txt2.grid(row=1, column=2, pady=5, padx=10)
+
+  ln_lbl.grid(row=2, column=0, padx=20, pady=5)
+  ln_txt1.grid(row=2, column=1, pady=5, padx=10)
+  ln_txt2.grid(row=2, column=2, pady=5, padx=10)
+  
+  phone_lbl.grid(row=3, column=0, padx=20, pady=5)
+  phone_txt1.grid(row=3, column=1, pady=5, padx=10)
+  phone_txt2.grid(row=3, column=2, pady=5, padx=10)
+
+  add_lbl.grid(row=4, column=0, padx=20, pady=5)
+  add_txt1.grid(row=4, column=1, pady=5, padx=10)
+  add_txt2.grid(row=4, column=2, pady=5, padx=10)
+
+  email_lbl.grid(row=5, column=0, padx=20, pady=5)
+  email_txt1.grid(row=5, column=1, pady=5, padx=10)
+  email_txt2.grid(row=5, column=2, pady=5, padx=10)
+
+  seat_type_lbl.grid(row=6, column=0, padx=20, pady=5)
+  seat_type1.grid(row=6, column=1, pady=5, padx=10)
+  seat_type2.grid(row=6, column=2, pady=5, padx=10)
+  
+  book_btn.grid(row=8, column=1, pady=5, padx=10)
+  cancel_btn.grid(row=8, column=2, pady=5, padx=10)
 
 def flights():
   for widget in F1.winfo_children():
@@ -200,7 +235,10 @@ def submit_flights():
     cursor.execute(query,(l_from,l_to))  
     result = cursor.fetchall()
     print(result)
-    search_results(result)
+    if len(result) == 0:
+      messagebox.showinfo("Error", "No Flights found for the given criteria.")
+    else:
+      search_results(result)
 
 def search_results(result):
   for widget in F1.winfo_children():
@@ -233,11 +271,7 @@ def search_results(result):
   cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
   search_btn.grid(row=r, column=0, columnspan=3, padx=20, pady=5)
   cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
-  
-def add_passenger():
-  db_conn = connect_db()
-  disconnt_db(db_conn)
-  pass
+ 
   
 def submit_registration():
   l_reg_user = v_reg_username.get().strip()
@@ -261,6 +295,9 @@ def submit_registration():
     messagebox.showinfo("Info", "User successfully registered to the system")
   disconnt_db(db_conn)
   login_page()
+
+def submit_passenger():
+  pass
   
 def connect_db():
   config = configparser.RawConfigParser()
@@ -289,11 +326,18 @@ v_reg_pwd = StringVar()
 v_reg_phone = StringVar()
 v_reg_add = StringVar()
 v_reg_email = StringVar()
-v_pax_fn = StringVar()
-v_pax_ln = StringVar()
-v_pax_phone = StringVar()
-v_pax_add = StringVar()
-v_pax_email = StringVar()
+v_pax_fn1 = StringVar()
+v_pax_ln1 = StringVar()
+v_pax_phone1 = StringVar()
+v_pax_add1 = StringVar()
+v_pax_email1 = StringVar()
+v_pax_fn2 = StringVar()
+v_pax_ln2 = StringVar()
+v_pax_phone2 = StringVar()
+v_pax_add2 = StringVar()
+v_pax_email2 = StringVar()
+v_seat_type1 = StringVar()
+v_seat_type2 = StringVar()
 v_from = StringVar()
 v_to = StringVar()
 v_date = StringVar()
