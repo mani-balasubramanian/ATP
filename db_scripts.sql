@@ -55,6 +55,17 @@ email varchar(30) not null,
 foreign key (booking_id) references booking(booking_id)
 );
 
+create view route_view as 
+select a.route_id
+    , a.airline
+    , a.start
+    , a.destination
+    , a.dep_time    
+    , concat(date_format(now(), '%d/%m/%Y')," ",a.dep_time) as dt_str
+    , str_to_date(concat(date_format(now(), '%d/%m/%Y')," ",a.dep_time), '%d/%m/%Y %H:%i') as dt_time
+    , a.duration from 
+    route a where
+    str_to_date(concat(date_format(now(), '%d/%m/%Y')," ",a.dep_time), '%d/%m/%Y %H:%i') > date_add(now(),interval 4 hour);
 
 insert into route (airline,start,destination,dep_time,duration) values('INDIGO','MAA','BLR','06:00',60);
 insert into route_details (route_id,seat_type,cost) values (1,'EC',2000);
