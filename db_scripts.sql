@@ -36,11 +36,9 @@ create table booking
 booking_id int not null auto_increment primary key, 
 booking_date date not null, 
 travel_date date not null, 
-airline varchar(30) not null,
 route_id int not null,
 username varchar(30) not null, 
-no_of_pas int not null, 
-seat_type char(2) not null, 
+no_of_pas int not null,
 total_cost decimal(9,2)
 );
 
@@ -52,6 +50,7 @@ last_name varchar(30) not null,
 phone varchar(15) not null, 
 address varchar(30), 
 email varchar(30) not null,
+seat_type char(2) not null, 
 foreign key (booking_id) references booking(booking_id)
 );
 
