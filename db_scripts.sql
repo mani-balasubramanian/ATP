@@ -35,7 +35,7 @@ create table booking
 (
 booking_id int not null auto_increment primary key, 
 booking_date timestamp DEFAULT CURRENT_TIMESTAMP,
-travel_date datetime not null, 
+travel_date date not null, 
 route_id int not null,
 username varchar(30) not null, 
 no_of_pas int not null,
