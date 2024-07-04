@@ -180,7 +180,7 @@ def flights():
 
   sday = datetime.datetime.today() + timedelta(days=1)
   eday=datetime.datetime.today() + timedelta(days=10)
-  date_values = [(sday+timedelta(days=x)).strftime('%d/%m/%Y') for x in range((eday-sday).days)]
+  date_values = [(sday+timedelta(days=x)).strftime('%Y-%m-%d') for x in range((eday-sday).days)]
 
   from_lbl = Label(F1, text="From:")
   from_txt = ttk.Combobox(F1,state="readonly",width=10,values=from_values, textvariable=v_from)
@@ -309,22 +309,46 @@ def submit_booking():
   l_pax_add2 = v_pax_add2.get().strip()
   l_pax_email2 = v_pax_email2.get().strip()
   l_seat_type2 = v_seat_type2.get().strip()
-  
+
+  l_passenger_list=[]
   if (l_pax_fn1 != "" and l_pax_ln1 != "" and l_pax_phone1 != "" and l_seat_type1 != ""):
     print ("Adding passenger 1")
+    l_passenger_dict={}
+    l_passenger_dict["fn"] = l_pax_fn1
+    l_passenger_dict["ln"] = l_pax_ln1
+    l_passenger_dict["phone"] = l_pax_phone1
+    l_passenger_dict["address"] = l_pax_add1
+    l_passenger_dict["email"] = l_pax_email1
+    l_passenger_dict["seat"] = l_seat_type1
+    l_passenger_list.append(l_passenger_dict)
     l_pax_flag1=True
     
   if (l_pax_fn2 != "" and l_pax_ln2 != "" and l_pax_phone2 != "" and l_seat_type2 != ""):
     print ("Adding passenger 2")
+    l_passenger_dict={}
+    l_passenger_dict["fn"] = l_pax_fn2
+    l_passenger_dict["ln"] = l_pax_ln2
+    l_passenger_dict["phone"] = l_pax_phone2
+    l_passenger_dict["address"] = l_pax_add2
+    l_passenger_dict["email"] = l_pax_email2
+    l_passenger_dict["seat"] = l_seat_type2
+    l_passenger_list.append(l_passenger_dict)    
     l_pax_flag2=True
-    
-  if l_pax_flag1 or l_pax_flag2:
-    print("Booking Ticket")
+      
+  if len(l_passenger_list) >0 :
     db_conn = connect_db()
     cursor = db_conn.cursor()
-    #query = ("insert into booking (username,password,phone,address,email) values (%s,%s,%s,%s,%s)")  
-    #cursor.execute(query,(l_reg_user,l_reg_pwd,l_reg_phone,l_reg_address,l_reg_email,))
-    #db_conn.commit()
+    query = ("insert into booking (travel_date,route_id,username,no_of_pas) values (%s,%s,%s,%s)")  
+    cursor.execute(query,(v_date.get(),v_route.get(),v_login_username.get(),len(l_passenger_list)))
+    
+    for p in l_passenger_list:
+      query = ("insert into passenger (booking_id,first_name,last_name,phone,address,email,seat_type) values (last_insert_id(),%s,%s,%s,%s,%s,%s)")  
+      cursor.execute(query,(p["fn"],p["ln"],p["phone"],p["address"],p["email"],p["seat"]))
+  
+    db_conn.commit()
+    disconnt_db(db_conn)
+    messagebox.showinfo("Info", "Booking Successful")
+    flights()
   else:
     messagebox.showinfo("Info", "Insufficient Passenger Data.")
   
