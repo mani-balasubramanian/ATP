@@ -90,12 +90,10 @@ def menu_page():
   
   booking_btn = Button(F1, text="Book Ticket",  width=50, command=flights,font=('verdana', 10))
   history_btn = Button(F1, text="View Bookings",  width=50, command=submit_registration,font=('verdana', 10))
-  passenger_btn = Button(F1, text="Add Passengers",  width=50, command=add_passenger,font=('verdana', 10))
   exit_btn = Button(F1, text="Exit",  width=50, command=login_page,font=('verdana', 10))
 
   booking_btn.grid(row=0, column=0, pady=5, padx=10)
   history_btn.grid(row=1, column=0, pady=5, padx=10)
-  passenger_btn.grid(row=2, column=0, pady=5, padx=10)
   exit_btn.grid(row=3, column=0, pady=5, padx=10)
 
 def add_passenger():
@@ -113,8 +111,8 @@ def add_passenger():
   fn_txt2 = Entry(F1, width=30, textvariable=v_pax_fn2)
 
   ln_lbl = Label(F1, text="Last Name:")
-  ln_txt1 = Entry(F1, width=30, show="*", textvariable=v_pax_ln1)
-  ln_txt2 = Entry(F1, width=30, show="*", textvariable=v_pax_ln2)
+  ln_txt1 = Entry(F1, width=30, textvariable=v_pax_ln1)
+  ln_txt2 = Entry(F1, width=30, textvariable=v_pax_ln2)
 
   phone_lbl = Label(F1, text="Phone:")
   phone_txt1 = Entry(F1, width=30, textvariable=v_pax_phone1)
@@ -132,7 +130,7 @@ def add_passenger():
   seat_type1 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type1)
   seat_type2 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type2)
 
-  book_btn = Button(F1, text="Book Ticket",  width=10, command=submit_passenger)
+  book_btn = Button(F1, text="Book Ticket",  width=10, command=submit_booking)
   cancel_btn = Button(F1, text="Back",  width=10, command=flights)
 
   head_lbl1.grid(row=0, column=0, padx=20, pady=5)
@@ -272,7 +270,6 @@ def search_results(result):
   search_btn.grid(row=r, column=0, columnspan=3, padx=20, pady=5)
   cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
  
-  
 def submit_registration():
   l_reg_user = v_reg_username.get().strip()
   l_reg_pwd = v_reg_pwd.get().strip()
@@ -296,8 +293,40 @@ def submit_registration():
   disconnt_db(db_conn)
   login_page()
 
-def submit_passenger():
-  pass
+def submit_booking():
+  l_pax_flag1=False
+  l_pax_fn1 = v_pax_fn1.get().strip()
+  l_pax_ln1 = v_pax_ln1.get().strip()
+  l_pax_phone1 = v_pax_phone1.get().strip()
+  l_pax_add1 = v_pax_add1.get().strip()
+  l_pax_email1 = v_pax_email1.get().strip()
+  l_seat_type1 = v_seat_type1.get().strip()
+  
+  l_pax_flag2=False
+  l_pax_fn2 = v_pax_fn2.get().strip()
+  l_pax_ln2 = v_pax_ln2.get().strip()
+  l_pax_phone2 = v_pax_phone2.get().strip()
+  l_pax_add2 = v_pax_add2.get().strip()
+  l_pax_email2 = v_pax_email2.get().strip()
+  l_seat_type2 = v_seat_type2.get().strip()
+  
+  if (l_pax_fn1 != "" and l_pax_ln1 != "" and l_pax_phone1 != "" and l_seat_type1 != ""):
+    print ("Adding passenger 1")
+    l_pax_flag1=True
+    
+  if (l_pax_fn2 != "" and l_pax_ln2 != "" and l_pax_phone2 != "" and l_seat_type2 != ""):
+    print ("Adding passenger 2")
+    l_pax_flag2=True
+    
+  if l_pax_flag1 or l_pax_flag2:
+    print("Booking Ticket")
+    db_conn = connect_db()
+    cursor = db_conn.cursor()
+    #query = ("insert into booking (username,password,phone,address,email) values (%s,%s,%s,%s,%s)")  
+    #cursor.execute(query,(l_reg_user,l_reg_pwd,l_reg_phone,l_reg_address,l_reg_email,))
+    #db_conn.commit()
+  else:
+    messagebox.showinfo("Info", "Insufficient Passenger Data.")
   
 def connect_db():
   config = configparser.RawConfigParser()
