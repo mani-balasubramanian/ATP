@@ -8,8 +8,8 @@ import datetime
 from datetime import timedelta
 
 def header():
-  w = 600 # width for the Tk root
-  h = 400 # height for the Tk root
+  w = 800 # width for the Tk root
+  h = 600 # height for the Tk root
 
   # get screen width and height
   ws = root.winfo_screenwidth() # width of the screen
@@ -89,7 +89,7 @@ def menu_page():
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
   booking_btn = Button(F1, text="Book Ticket",  width=50, command=flights,font=('verdana', 10))
-  history_btn = Button(F1, text="View Bookings",  width=50, command=submit_registration,font=('verdana', 10))
+  history_btn = Button(F1, text="View Bookings",  width=50, command=booking_history,font=('verdana', 10))
   exit_btn = Button(F1, text="Exit",  width=50, command=login_page,font=('verdana', 10))
 
   booking_btn.grid(row=0, column=0, pady=5, padx=10)
@@ -172,9 +172,11 @@ def flights():
   db_conn = connect_db()
   cursor = db_conn.cursor()
   query = ("select distinct start from route order by start")  
+  print(query)
   cursor.execute(query)
   from_values = cursor.fetchall()
   query = ("select distinct destination from route order by destination")  
+  print(query)
   cursor.execute(query)
   to_values = cursor.fetchall()
 
@@ -207,6 +209,7 @@ def submit_login():
   result=[]
   cursor = db_conn.cursor()
   query = ("select * from customer where username = %s")  
+  print(query)
   cursor.execute(query,(l_login_user,))
   result = cursor.fetchall()
   disconnt_db(db_conn)
@@ -219,9 +222,6 @@ def submit_flights():
   l_from = v_from.get()
   l_to = v_to.get()
   l_date = v_date.get()
-  print(l_from)
-  print(l_to)
-  print(l_date)
   if (l_from == "" or l_to == "" or l_date == ""):
     messagebox.showinfo("Error", "Plese select all required details")
   else:
@@ -232,7 +232,6 @@ def submit_flights():
     print(query)
     cursor.execute(query,(l_from,l_to))  
     result = cursor.fetchall()
-    print(result)
     if len(result) == 0:
       messagebox.showinfo("Error", "No Flights found for the given criteria.")
     else:
@@ -255,7 +254,6 @@ def search_results(result):
   for res in result: 
     c=0
     for col in res:
-      print(col)
       if c==0:
         v_route.set(col)
         rb = Radiobutton(F1, text = col, variable = v_route, value=col)
@@ -278,7 +276,8 @@ def submit_registration():
   l_reg_email = v_reg_email.get().strip()
   db_conn = connect_db()
   cursor = db_conn.cursor()
-  query = ("select * from customer where username = %s")  
+  query = ("select * from customer where username = %s")
+  print(query)
   cursor.execute(query,(l_reg_user,))
   result = cursor.fetchall()
   
@@ -287,6 +286,7 @@ def submit_registration():
   else: 
     cursor = db_conn.cursor()
     query = ("insert into customer (username,password,phone,address,email) values (%s,%s,%s,%s,%s)")  
+    print(query)
     cursor.execute(query,(l_reg_user,l_reg_pwd,l_reg_phone,l_reg_address,l_reg_email,))
     db_conn.commit()
     messagebox.showinfo("Info", "User successfully registered to the system")
@@ -339,18 +339,139 @@ def submit_booking():
     db_conn = connect_db()
     cursor = db_conn.cursor()
     query = ("insert into booking (travel_date,route_id,username,no_of_pas) values (%s,%s,%s,%s)")  
+    print(query)
     cursor.execute(query,(v_date.get(),v_route.get(),v_login_username.get(),len(l_passenger_list)))
     
+    cost = 0.0
     for p in l_passenger_list:
+      query = ("select cost from route_details where seat_type = %s and route_id = %s")
+      print(query)
+      cursor.execute(query,(p["seat"],v_route.get()))
+      result = cursor.fetchone()
+      cost = cost + float(result[0])
       query = ("insert into passenger (booking_id,first_name,last_name,phone,address,email,seat_type) values (last_insert_id(),%s,%s,%s,%s,%s,%s)")  
+      print(query)
       cursor.execute(query,(p["fn"],p["ln"],p["phone"],p["address"],p["email"],p["seat"]))
-  
+
+    query = "update booking set total_cost = "+str(cost)+" where booking_id=last_insert_id()"
+    print(query)
+    cursor.execute(query)
+
+    query = ("select last_insert_id()")
+    print(query)
+    cursor.execute(query)
+    result = cursor.fetchone()
+    l_booking_id = result[0]
     db_conn.commit()
     disconnt_db(db_conn)
     messagebox.showinfo("Info", "Booking Successful")
-    flights()
+    view_booking(l_booking_id)
   else:
     messagebox.showinfo("Info", "Insufficient Passenger Data.")
+
+def view_booking(booking_id):
+  for widget in F1.winfo_children():
+      widget.destroy()  
+  F1.configure(text='Booking')
+  F1.place(relx=.5, rely=.5, anchor=CENTER)
+  db_conn = connect_db()
+  cursor = db_conn.cursor()  
+  query = """
+  select 
+	r.start
+	,r.destination
+	,r.airline
+	,b.travel_date
+	,r.dep_time 
+	,p.pax
+	,b.total_cost
+  from route r, booking b, (select booking_id, group_concat(first_name) as pax from passenger group by booking_id) p
+  where r.route_id = b.route_id
+  and p.booking_id = b.booking_id
+  and b.booking_id= """+str(booking_id)
+  print(query)
+  cursor.execute(query)
+  result = cursor.fetchone()
+
+  
+  from_lbl = Label(F1, text="From:", width=30)
+  from_txt = Label(F1, text=result[0])
+  to_lbl = Label(F1, text="To:")
+  to_txt = Label(F1, text=result[1])
+  airline_lbl = Label(F1, text="Airline:")
+  airline_txt = Label(F1, text=result[2])
+  traveldt_lbl = Label(F1, text="Date:")
+  traveldt_txt = Label(F1, text=result[3])
+  traveltime_lbl = Label(F1, text="Time:")
+  traveltime_txt = Label(F1, text=result[4])
+  pax_lbl = Label(F1, text="Passengers:")
+  pax_txt = Label(F1, text=result[5])
+  cost_lbl = Label(F1, text="Total Cost:")
+  cost_txt = Label(F1, text=result[6])
+  
+  cancel_btn = Button(F1, text="Close",  width=10, command=flights)
+
+  from_lbl.grid(row=0, column=0, padx=20, pady=5)
+  from_txt.grid(row=0, column=1, pady=5, padx=10)
+  to_lbl.grid(row=1, column=0, padx=20, pady=5)
+  to_txt.grid(row=1, column=1, pady=5, padx=10)
+  airline_lbl.grid(row=2, column=0, padx=20, pady=5)
+  airline_txt.grid(row=2, column=1, pady=5, padx=10)
+  traveldt_lbl.grid(row=3, column=0, padx=20, pady=5)
+  traveldt_txt.grid(row=3, column=1, pady=5, padx=10)
+  traveltime_lbl.grid(row=4, column=0, padx=20, pady=5)
+  traveltime_txt.grid(row=4, column=1, pady=5, padx=10)
+  pax_lbl.grid(row=5, column=0, padx=20, pady=5)
+  pax_txt.grid(row=5, column=1, pady=5, padx=10)
+  cost_lbl.grid(row=6, column=0, padx=20, pady=5)
+  cost_txt.grid(row=6, column=1, pady=5, padx=10)  
+  cancel_btn.grid(row=7, column=2,pady=5, padx=10) 
+  disconnt_db(db_conn)
+
+def booking_history():
+  for widget in F1.winfo_children():
+      widget.destroy()  
+  F1.configure(text='Booking')
+  F1.place(relx=.5, rely=.5, anchor=CENTER)
+  db_conn = connect_db()
+  cursor = db_conn.cursor()  
+  query = """
+  select 
+	b.booking_id
+	,b.booking_date
+	,r.start
+	,r.destination
+	,r.airline
+	,b.travel_date
+	,r.dep_time 
+	,b.total_cost
+  from route r, booking b
+  where r.route_id = b.route_id
+  and username='"""+v_login_username.get()+"""' order by booking_id desc"""
+  print(query)
+  cursor.execute(query)
+  result = cursor.fetchall()
+
+  header = ['ID','BOOKING DT','FROM','TO','AIRLINE','TR DATE','TIME','COST']
+  r=0
+  c=0
+  for h in header:
+    lbl = Label(F1, text=h)
+    lbl.grid(row=r, column=c, padx=20, pady=5)
+    c=c+1
+  r=r+1
+  
+  for res in result: 
+    c=0
+    for col in res:
+      lbl = Label(F1, text=col)
+      lbl.grid(row=r, column=c, padx=20, pady=5)
+      c=c+1
+    r=r+1
+  cancel_btn = Button(F1, text="Close",  width=10, command=menu_page)
+  cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
+  disconnt_db(db_conn)
+
   
 def connect_db():
   config = configparser.RawConfigParser()
@@ -395,6 +516,7 @@ v_from = StringVar()
 v_to = StringVar()
 v_date = StringVar()
 v_route = StringVar()
+v_booking_id = StringVar()
 
 F1 = LabelFrame(root, font=('verdana', 12))
 
