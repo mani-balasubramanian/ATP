@@ -54,6 +54,8 @@ seat_type char(2) not null,
 foreign key (booking_id) references booking(booking_id)
 );
 
+-- maa
+
 insert into route (airline,start,destination,dep_time,duration) values('INDIGO','MAA','BLR','06:00',60);
 insert into route_details (route_id,seat_type,cost) values (1,'EC',2000);
 insert into route_details (route_id,seat_type,cost) values (1,'BC',4000);
@@ -101,3 +103,57 @@ insert into route_details (route_id,seat_type,cost) values (11,'BC',8000);
 insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','DEL','MAA','19:00',180);
 insert into route_details (route_id,seat_type,cost) values (12,'EC',6000);
 insert into route_details (route_id,seat_type,cost) values (12,'BC',8000);
+
+-- blr
+
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','BLR','MUM','09:00',120);
+insert into route_details (route_id,seat_type,cost) values (13,'EC',4000);
+insert into route_details (route_id,seat_type,cost) values (13,'BC',6000);
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','MUM','BLR','13:00',120);
+insert into route_details (route_id,seat_type,cost) values (14,'EC',4000);
+insert into route_details (route_id,seat_type,cost) values (14,'BC',6000);
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','BLR','MUM','07:00',120);
+insert into route_details (route_id,seat_type,cost) values (15,'EC',4000);
+insert into route_details (route_id,seat_type,cost) values (15,'BC',6000);
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','MUM','BLR','11:00',120);
+insert into route_details (route_id,seat_type,cost) values (16,'EC',4000);
+insert into route_details (route_id,seat_type,cost) values (16,'BC',6000);
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','BLR','DEL','14:00',180);
+insert into route_details (route_id,seat_type,cost) values (17,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (17,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','DEL','BLR','18:00',180);
+insert into route_details (route_id,seat_type,cost) values (18,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (18,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','BLR','DEL','15:00',180);
+insert into route_details (route_id,seat_type,cost) values (19,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (19,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','DEL','BLR','19:00',180);
+insert into route_details (route_id,seat_type,cost) values (20,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (20,'BC',8000);
+
+-- mum
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','MUM','DEL','14:00',180);
+insert into route_details (route_id,seat_type,cost) values (21,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (21,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('INDIGO','DEL','MUM','18:00',180);
+insert into route_details (route_id,seat_type,cost) values (22,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (22,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','MUM','DEL','15:00',180);
+insert into route_details (route_id,seat_type,cost) values (23,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (23,'BC',8000);
+
+insert into route (airline,start,destination,dep_time,duration) values('AIRINDIA','DEL','MUM','19:00',180);
+insert into route_details (route_id,seat_type,cost) values (24,'EC',6000);
+insert into route_details (route_id,seat_type,cost) values (24,'BC',8000);
+
