@@ -1,4 +1,4 @@
-import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox 
 from tkinter import ttk
@@ -8,7 +8,7 @@ import datetime
 from datetime import timedelta
 import string
 import re
-
+from ttkthemes import ThemedTk
   
 def connect_db():
   config = configparser.RawConfigParser()
@@ -58,8 +58,8 @@ def header():
   # and where it is placed
   root.geometry('%dx%d+%d+%d' % (w, h, x, y))
   root.title("Airlines Booking")
-  title = tk.Label(root, text="Airlines Ticket Booking", font=('verdana', 24, 'normal'), pady=2, bd=12, bg="blue", fg="white")
-  title.pack(fill=X)
+  #title = ttk.Label(root, text="Airlines Ticket Booking")
+  #title.pack(fill=X)
 
 
 def login_page():
@@ -70,12 +70,12 @@ def login_page():
   F1.configure(text='Login')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
 
-  username_lbl = Label(F1, text="Username:", width=30)
-  username_txt = Entry(F1, width=30, textvariable=v_login_username)
-  pwd_lbl = Label(F1, text="Password:")
-  pwd_txt = Entry(F1, width=30, show="*", textvariable=v_login_pwd)
-  login_btn = Button(F1, text="Login",  width=10,command=submit_login)
-  register_btn = Button(F1, text="Register",  width=10, command=registration_page)
+  username_lbl = ttk.Label(F1, text="Username:")
+  username_txt = ttk.Entry(F1, width=30, textvariable=v_login_username)
+  pwd_lbl = ttk.Label(F1, text="Password:")
+  pwd_txt = ttk.Entry(F1, width=30, show="*", textvariable=v_login_pwd)
+  login_btn = ttk.Button(F1, text="Login",  width=10,command=submit_login)
+  register_btn = ttk.Button(F1, text="Register",  width=10, command=registration_page)
 
   username_lbl.grid(row=0, column=0, padx=20, pady=5)
   username_txt.grid(row=0, column=1, pady=5, padx=10)
@@ -91,18 +91,18 @@ def registration_page():
   F1.configure(text='Registration')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
-  username_lbl = Label(F1, text="Username:", width=30)
-  username_txt = Entry(F1, width=30, textvariable=v_reg_username)
-  pwd_lbl = Label(F1, text="Password:")
-  pwd_txt = Entry(F1, width=30, show="*", textvariable=v_reg_pwd)
-  phone_lbl = Label(F1, text="Phone:")
-  phone_txt = Entry(F1, width=30, textvariable=v_reg_phone)
-  add_lbl = Label(F1, text="Address:")
-  add_txt = Entry(F1, width=30, textvariable=v_reg_add)
-  email_lbl = Label(F1, text="Email:")
-  email_txt = Entry(F1, width=30, textvariable=v_reg_email)
-  register_btn = Button(F1, text="Register",  width=10, command=submit_registration)
-  cancel_btn = Button(F1, text="Cancel",  width=10, command=login_page)
+  username_lbl = ttk.Label(F1, text="Username:")
+  username_txt = ttk.Entry(F1, width=30, textvariable=v_reg_username)
+  pwd_lbl = ttk.Label(F1, text="Password:")
+  pwd_txt = ttk.Entry(F1, width=30, show="*", textvariable=v_reg_pwd)
+  phone_lbl = ttk.Label(F1, text="Phone:")
+  phone_txt = ttk.Entry(F1, width=30, textvariable=v_reg_phone)
+  add_lbl = ttk.Label(F1, text="Address:")
+  add_txt = ttk.Entry(F1, width=30, textvariable=v_reg_add)
+  email_lbl = ttk.Label(F1, text="Email:")
+  email_txt = ttk.Entry(F1, width=30, textvariable=v_reg_email)
+  register_btn = ttk.Button(F1, text="Register",  width=10, command=submit_registration)
+  cancel_btn = ttk.Button(F1, text="Cancel",  width=10, command=login_page)
 
   username_lbl.grid(row=0, column=0, padx=20, pady=5)
   username_txt.grid(row=0, column=1, pady=5, padx=10)
@@ -124,9 +124,9 @@ def menu_page():
   F1.configure(text='Menu')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
-  booking_btn = Button(F1, text="Book Ticket",  width=50, command=flights,font=('verdana', 10))
-  history_btn = Button(F1, text="View Bookings",  width=50, command=booking_history,font=('verdana', 10))
-  exit_btn = Button(F1, text="Exit",  width=50, command=login_page,font=('verdana', 10))
+  booking_btn = ttk.Button(F1, text="Book Ticket", width=60,command=flights)
+  history_btn = ttk.Button(F1, text="View Bookings", width=60,command=booking_history)
+  exit_btn = ttk.Button(F1, text="Exit", width=60, command=login_page)
 
   booking_btn.grid(row=0, column=0, pady=5, padx=10)
   history_btn.grid(row=1, column=0, pady=5, padx=10)
@@ -152,14 +152,14 @@ def flights():
   eday=datetime.datetime.today() + timedelta(days=10)
   date_values = [(sday+timedelta(days=x)).strftime('%Y-%m-%d') for x in range((eday-sday).days)]
 
-  from_lbl = Label(F1, text="From:")
+  from_lbl = ttk.Label(F1, text="From:")
   from_txt = ttk.Combobox(F1,state="readonly",width=10,values=from_values, textvariable=v_from)
-  to_lbl = Label(F1, text="To:")
+  to_lbl = ttk.Label(F1, text="To:")
   to_txt = ttk.Combobox(F1,state="readonly",width=10,values=to_values, textvariable=v_to)
-  date_lbl = Label(F1, text="Date:")
+  date_lbl = ttk.Label(F1, text="Date:")
   date_txt = ttk.Combobox(F1,state="readonly",width=10,values=date_values,textvariable=v_date)
-  search_btn = Button(F1, text="Search",  width=10, command=submit_flights)
-  cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
+  search_btn = ttk.Button(F1, text="Search",  width=10, command=submit_flights)
+  cancel_btn = ttk.Button(F1, text="Cancel",  width=10, command=menu_page)
     
   from_lbl.grid(row=0, column=0, padx=20, pady=5)
   from_txt.grid(row=0, column=1, pady=5, padx=10)
@@ -177,36 +177,36 @@ def add_passenger():
   F1.configure(text='Add Passenger')
   F1.place(relx=.5, rely=.5, anchor=CENTER)
   
-  head_lbl1 = Label(F1, text=" ", width=15)
-  head_lbl2 = Label(F1, text="Passenger 1", width=15)
-  head_lbl3 = Label(F1, text="Passenger 2", width=15)
+  head_lbl1 = ttk.Label(F1, text=" ", width=15)
+  head_lbl2 = ttk.Label(F1, text="Passenger 1", width=15)
+  head_lbl3 = ttk.Label(F1, text="Passenger 2", width=15)
 
-  fn_lbl = Label(F1, text="First Name:", width=15)
-  fn_txt1 = Entry(F1, width=30, textvariable=v_pax_fn1)
-  fn_txt2 = Entry(F1, width=30, textvariable=v_pax_fn2)
+  fn_lbl = ttk.Label(F1, text="First Name:",)
+  fn_txt1 = ttk.Entry(F1, width=30, textvariable=v_pax_fn1)
+  fn_txt2 = ttk.Entry(F1, width=30, textvariable=v_pax_fn2)
 
-  ln_lbl = Label(F1, text="Last Name:")
-  ln_txt1 = Entry(F1, width=30, textvariable=v_pax_ln1)
-  ln_txt2 = Entry(F1, width=30, textvariable=v_pax_ln2)
+  ln_lbl = ttk.Label(F1, text="Last Name:")
+  ln_txt1 = ttk.Entry(F1, width=30, textvariable=v_pax_ln1)
+  ln_txt2 = ttk.Entry(F1, width=30, textvariable=v_pax_ln2)
 
-  phone_lbl = Label(F1, text="Phone:")
-  phone_txt1 = Entry(F1, width=30, textvariable=v_pax_phone1)
-  phone_txt2 = Entry(F1, width=30, textvariable=v_pax_phone2)
+  phone_lbl = ttk.Label(F1, text="Phone:")
+  phone_txt1 = ttk.Entry(F1, width=30, textvariable=v_pax_phone1)
+  phone_txt2 = ttk.Entry(F1, width=30, textvariable=v_pax_phone2)
 
-  add_lbl = Label(F1, text="Address:")
-  add_txt1 = Entry(F1, width=30, textvariable=v_pax_add1)
-  add_txt2 = Entry(F1, width=30, textvariable=v_pax_add2)
+  add_lbl = ttk.Label(F1, text="Address:")
+  add_txt1 = ttk.Entry(F1, width=30, textvariable=v_pax_add1)
+  add_txt2 = ttk.Entry(F1, width=30, textvariable=v_pax_add2)
 
-  email_lbl = Label(F1, text="Email:")
-  email_txt1 = Entry(F1, width=30, textvariable=v_pax_email1)
-  email_txt2 = Entry(F1, width=30, textvariable=v_pax_email2)
+  email_lbl = ttk.Label(F1, text="Email:")
+  email_txt1 = ttk.Entry(F1, width=30, textvariable=v_pax_email1)
+  email_txt2 = ttk.Entry(F1, width=30, textvariable=v_pax_email2)
   
-  seat_type_lbl = Label(F1, text="Class:")
+  seat_type_lbl = ttk.Label(F1, text="Class:")
   seat_type1 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type1)
   seat_type2 = ttk.Combobox(F1,state="readonly",width=10,values=['EC','BC'], textvariable=v_seat_type2)
 
-  book_btn = Button(F1, text="Book Ticket",  width=10, command=submit_booking)
-  cancel_btn = Button(F1, text="Back",  width=10, command=flights)
+  book_btn = ttk.Button(F1, text="Book Ticket",  width=10, command=submit_booking)
+  cancel_btn = ttk.Button(F1, text="Back",  width=10, command=flights)
 
   head_lbl1.grid(row=0, column=0, padx=20, pady=5)
   head_lbl2.grid(row=0, column=1, padx=20, pady=5)
@@ -320,7 +320,7 @@ def search_results(result):
   r=0
   c=0
   for h in header:
-    lbl = Label(F1, text=h)
+    lbl = ttk.Label(F1, text=h)
     lbl.grid(row=r, column=c, padx=20, pady=5)
     c=c+1
   r=r+1
@@ -330,15 +330,15 @@ def search_results(result):
     for col in res:
       if c==0:
         v_route.set(col)
-        rb = Radiobutton(F1, text = col, variable = v_route, value=col)
+        rb = ttk.Radiobutton(F1, text = col, variable = v_route, value=col)
         rb.grid(row=r, column=c, padx=20, pady=5)
       else:
-        lbl = Label(F1, text=col)
+        lbl = ttk.Label(F1, text=col)
         lbl.grid(row=r, column=c, padx=20, pady=5)
       c=c+1
     r=r+1
-  search_btn = Button(F1, text="Continue",  width=10, command=add_passenger)
-  cancel_btn = Button(F1, text="Cancel",  width=10, command=menu_page)
+  search_btn = ttk.Button(F1, text="Continue",  width=10, command=add_passenger)
+  cancel_btn = ttk.Button(F1, text="Cancel",  width=10, command=menu_page)
   search_btn.grid(row=r, column=0, columnspan=3, padx=20, pady=5)
   cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
  
@@ -443,22 +443,22 @@ def view_booking(booking_id):
   result = cursor.fetchone()
 
   
-  from_lbl = Label(F1, text="From:", width=30)
-  from_txt = Label(F1, text=result[0])
-  to_lbl = Label(F1, text="To:")
-  to_txt = Label(F1, text=result[1])
-  airline_lbl = Label(F1, text="Airline:")
-  airline_txt = Label(F1, text=result[2])
-  traveldt_lbl = Label(F1, text="Date:")
-  traveldt_txt = Label(F1, text=result[3])
-  traveltime_lbl = Label(F1, text="Time:")
-  traveltime_txt = Label(F1, text=result[4])
-  pax_lbl = Label(F1, text="Passengers:")
-  pax_txt = Label(F1, text=result[5])
-  cost_lbl = Label(F1, text="Total Cost:")
-  cost_txt = Label(F1, text=result[6])
+  from_lbl = ttk.Label(F1, text="From:")
+  from_txt = ttk.Label(F1, text=result[0])
+  to_lbl = ttk.Label(F1, text="To:")
+  to_txt = ttk.Label(F1, text=result[1])
+  airline_lbl = ttk.Label(F1, text="Airline:")
+  airline_txt = ttk.Label(F1, text=result[2])
+  traveldt_lbl = ttk.Label(F1, text="Date:")
+  traveldt_txt = ttk.Label(F1, text=result[3])
+  traveltime_lbl = ttk.Label(F1, text="Time:")
+  traveltime_txt = ttk.Label(F1, text=result[4])
+  pax_lbl = ttk.Label(F1, text="Passengers:")
+  pax_txt = ttk.Label(F1, text=result[5])
+  cost_lbl = ttk.Label(F1, text="Total Cost:")
+  cost_txt = ttk.Label(F1, text=result[6])
   
-  cancel_btn = Button(F1, text="Close",  width=10, command=flights)
+  cancel_btn = ttk.Button(F1, text="Close",  width=10, command=flights)
 
   from_lbl.grid(row=0, column=0, padx=20, pady=5)
   from_txt.grid(row=0, column=1, pady=5, padx=10)
@@ -505,7 +505,7 @@ def booking_history():
   r=0
   c=0
   for h in header:
-    lbl = Label(F1, text=h)
+    lbl = ttk.Label(F1, text=h)
     lbl.grid(row=r, column=c, padx=20, pady=5)
     c=c+1
   r=r+1
@@ -513,18 +513,33 @@ def booking_history():
   for res in result: 
     c=0
     for col in res:
-      lbl = Label(F1, text=col)
+      lbl = ttk.Label(F1, text=col)
       lbl.grid(row=r, column=c, padx=20, pady=5)
       c=c+1
     r=r+1
-  cancel_btn = Button(F1, text="Close",  width=10, command=menu_page)
+  cancel_btn = ttk.Button(F1, text="Close",  width=10, command=menu_page)
   cancel_btn.grid(row=r, column=3, columnspan=3, pady=5, padx=10) 
   disconnect_db(db_conn)
 
   
 #Main script starts here
 
-root = tk.Tk()
+#root = tk.Tk()
+root = ThemedTk(theme='breeze')
+# Add image file 
+bg = PhotoImage(file = "airline.png") 
+  
+# Create Canvas 
+canvas1 = Canvas( root, width = 400, 
+                 height = 400) 
+  
+canvas1.pack(fill = "both", expand = True) 
+  
+# Display image 
+canvas1.create_image( 0, 0, image = bg,  
+                     anchor = "nw") 
+#print(root.get_themes())
+
 v_login_username = StringVar()
 v_login_pwd = StringVar()
 v_reg_username = StringVar()
@@ -550,7 +565,7 @@ v_date = StringVar()
 v_route = StringVar()
 v_booking_id = StringVar()
 
-F1 = LabelFrame(root, font=('verdana', 12))
+F1 = ttk.LabelFrame(root)
 
 header()
 login_page()
