@@ -525,7 +525,8 @@ def booking_history():
 #Main script starts here
 
 #root = tk.Tk()
-root = ThemedTk(theme='breeze')
+root = ThemedTk(theme='itft1')
+root.resizable(False, False)
 # Add image file 
 bg = PhotoImage(file = "airline.png") 
   
